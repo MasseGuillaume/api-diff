@@ -11,13 +11,13 @@ object Main {
       Classpath(AbsolutePath(coursier.fetchJars("org.scala-lang", "scala-library", version).head.toPath))
     }
 
-    val scala213 = scala("2.13.0-M4")
-    val scala212 = scala("2.12.6")
+    val scala213 = run(scala("2.13.0-M4"))
+    val scala212 = run(scala("2.12.6"))
 
-    Locator(run(scala212))((path, doc) => println(path))
+    diff(scala212, scala213)
   }
 
-  def run(sclasspath: Classpath): Path = {
+  def run(sclasspath: Classpath): List[TextDocument] = {
     val settings = metacp.Settings()
       .withClasspath(sclasspath)
       .withPar(false)
@@ -25,6 +25,18 @@ object Main {
       .Reporter()
       .withOut(System.out)
       .withErr(System.out)
-    scala.meta.cli.Metacp.process(settings, reporter).get.entries.head.toNIO
+
+    val dbFiles = scala.meta.cli.Metacp.process(settings, reporter).get.entries.head.toNIO
+
+    val docsB = List.newBuilder[TextDocument]
+    Locator(dbFiles)((path, docs) =>
+      docsB ++= docs.documents
+    )
+    docsB.result()
+  }
+
+  def diff(oldApi: List[TextDocument], newApi: List[TextDocument]): Unit = {
+    println(oldApi.size)
+    println(newApi.size)
   }
 }
