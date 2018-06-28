@@ -27,6 +27,7 @@ lazy val apiDiff = project
     ),
     libraryDependencies ++= Seq(
       "org.scalameta" %% "metacp" % "4.0.0-M4",
+      "org.scalameta" %% "metap" % "4.0.0-M4",
       "io.get-coursier" %% "coursier" % "1.1.0-M4",
       "io.get-coursier" %% "coursier-cache" % "1.1.0-M4"
     )
