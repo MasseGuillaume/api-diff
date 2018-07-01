@@ -11,3 +11,10 @@ class A {
   // removed
   def f3 = 3
 }
+
+// deprecate all underlying symbols
+@deprecated
+class B {
+  def f1 = 1
+  def f2 = 2
+}

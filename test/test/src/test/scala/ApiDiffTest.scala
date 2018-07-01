@@ -11,10 +11,8 @@ object ApiDiffTests extends TestSuite{
     "diff" - {
       val oldApi = run(Classpath(AbsolutePath(fix.BuildInfo.oldApiClasspath.toPath)))
       val newApi = run(Classpath(AbsolutePath(fix.BuildInfo.newApiClasspath.toPath)))
-
       val obtained = diff(oldApi, newApi)
       val expected = "p.A#f3()."
-
       assert(obtained == expected)
     }
   }
