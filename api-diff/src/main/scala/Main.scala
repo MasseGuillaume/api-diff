@@ -48,15 +48,6 @@ object Main {
     val oldSymbols = symbolsMap(oldApi) 
     val newSymbols = symbolsMap(newApi)
 
-    def topLevel(si: SymbolInformation): Boolean = {
-      import SymbolInformation.Kind._
-      
-      si.kind match {
-        case OBJECT | PACKAGE | PACKAGE_OBJECT | CLASS | TRAIT | INTERFACE => true
-        case _ => false
-      }
-    }
-
     def deprecated(s: SymbolInformation): Boolean = 
       s.annotations.exists(_.tpe match {
         case TypeRef(_ , s, _) => s == "scala.deprecated#"
@@ -65,7 +56,7 @@ object Main {
 
     val deprecatedSymbols = 
       oldApi
-        .filter(si => topLevel(si) && deprecated(si))
+        .filter(si => deprecated(si))
         .map(_.symbol)
 
 

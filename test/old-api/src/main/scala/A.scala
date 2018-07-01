@@ -10,6 +10,9 @@ class A {
 
   // removed
   def f3 = 3
+
+  @deprecated
+  type C[T] = List[T]
 }
 
 // deprecate all underlying symbols
