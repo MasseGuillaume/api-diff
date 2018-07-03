@@ -48,23 +48,36 @@ object Main {
     val oldSymbols = symbolsMap(oldApi) 
     val newSymbols = symbolsMap(newApi)
 
-    def deprecated(s: SymbolInformation): Boolean = 
+    def isDeprecated(s: SymbolInformation): Boolean = 
       s.annotations.exists(_.tpe match {
         case TypeRef(_ , s, _) => s == "scala.deprecated#"
         case _ => false
       })
 
+    def isPrivate(s: SymbolInformation): Boolean = {
+      import Accessibility.Tag._
+      s.accessibility.map(
+        _.tag match {
+          case PRIVATE | PRIVATE_THIS | PRIVATE_WITHIN => true
+          case _ => false
+        }
+      ).getOrElse(false)
+    }
+
     val deprecatedSymbols = 
       oldApi
-        .filter(si => deprecated(si))
+        .filter(isDeprecated)
         .map(_.symbol)
 
 
     val removed = (oldSymbols.keySet -- newSymbols.keySet).toList.map(s => oldSymbols(s))
 
+
+
     removed
-      .filter(si => !deprecated(si) && 
-                    !deprecatedSymbols.exists(ds => si.symbol.startsWith(ds)))
+      .filter(si => !isDeprecated(si) && 
+                    !deprecatedSymbols.exists(ds => si.symbol.startsWith(ds)) &&
+                    !isPrivate(si))
       .map(_.symbol)
       .sorted
       .mkString(System.lineSeparator)
